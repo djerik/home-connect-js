@@ -11,7 +11,7 @@ class HomeConnect extends EventEmitter {
       this.tokens.refresh_token = refreshToken;
       this.eventSources = {};
       this.eventListeners = {};
-      this.eventSource = {};
+      this.eventSource;
       this.eventListener = new Map();
       this.tokenRefreshTimeout = null
     }
@@ -31,8 +31,7 @@ class HomeConnect extends EventEmitter {
             // schedule token refresh
             clearTimeout(this.tokenRefreshTimeout)
             const timeToNextTokenRefresh = (this.tokens.timestamp + this.tokens.expires_in * 0.9) - Math.floor(Date.now() / 1000)
-            this.tokenRefreshTimeout = setTimeout(() => this.refreshTokens(), timeToNextTokenRefresh * 1000)
-    
+            this.tokenRefreshTimeout = setTimeout(() => this.refreshTokens(), timeToNextTokenRefresh * 1000)   
             this.emit("newRefreshToken", this.tokens.refresh_token);
             this.client = await utils.getClient(this.tokens.access_token);
         } catch (error) {
@@ -71,7 +70,7 @@ class HomeConnect extends EventEmitter {
     }
     
     subscribe(event, callback) {
-        if (this.eventSource) {
+        if (!this.eventSource) {
             const url = isSimulated ? urls.simulation.base : urls.physical.base;
             this.eventSource = new EventSource(url + 'api/homeappliances/events', {
                 headers: {
@@ -101,7 +100,7 @@ class HomeConnect extends EventEmitter {
             this.tokens = await utils.refreshToken(this.clientSecret, this.tokens.refresh_token);
             this.emit("newRefreshToken", this.tokens.refresh_token);
             this.client = await utils.getClient(this.tokens.access_token);
-            this.recreateEventSources()
+            this.recreateEventSources();
             timeToNextTokenRefresh = (this.tokens.timestamp + this.tokens.expires_in * 0.9) - Math.floor(Date.now() / 1000)
         } catch (error) {
             timeToNextTokenRefresh = 60
@@ -136,16 +135,16 @@ class HomeConnect extends EventEmitter {
                 this.eventSources[haid].addEventListener(event, callback)
             }
         }
-        if( eventSource ){
+        if( this.eventSource ){
             // close EventSource
-            this.eventSource.close()
+            this.eventSource.close();
             // remove all EventListeners from EventSource
             for (const [ event, callback ] of this.eventListener) {
                 this.eventSource.removeEventListener(event, callback)
             }
             // create new EventSource with current acces_token
             const url = isSimulated ? urls.simulation.base : urls.physical.base;
-            this.eventSources[haid] = new EventSource(
+            this.eventSource = new EventSource(
                 url + 'api/homeappliances/events',
                 {
                     headers: {
@@ -156,7 +155,7 @@ class HomeConnect extends EventEmitter {
             )
             // aply old EventListeners
             for (const [ event, callback ] of this.eventListener) {
-                this.eventSource.addEventListener(event, callback)
+                this.eventSource.addEventListener(event, callback);
             }
         }
 

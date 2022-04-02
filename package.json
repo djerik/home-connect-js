@@ -9,5 +9,6 @@
     "eventsource": "^2.0.0",
     "express": "^4.17.3",
     "swagger-client": "^3.18.4"
+    "open": "^8.4.0"
   }
 }

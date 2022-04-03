@@ -39,9 +39,9 @@ class HomeConnect extends EventEmitter {
         }
     }
 
-    async command(tag, operationId, haid, body) {
+    async command(tag, operationId, haId, body) {
         try {
-            return this.client.apis[tag][operationId]({ haid, body })
+            return this.client.apis[tag][operationId]({ haId, body })
         } catch (error) {
             throw error
         }
@@ -58,7 +58,7 @@ class HomeConnect extends EventEmitter {
             });
             this.eventSources = { ...this.eventSources, [haid]: eventSource };
         }
-
+		
         if (this.eventListeners && !(haid in this.eventListeners)) {
             const listeners = new Map()
             listeners.set(event, callback)

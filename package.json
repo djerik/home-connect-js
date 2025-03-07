@@ -1,6 +1,7 @@
 {
   "name": "home-connect-js",
   "version": "0.1.4",
+  "type": "module",
   "main": "main.js",
   "repository": "https://github.com/pckhib/home-connect-js.git",
   "author": "pckhib <patrickhieber92@gmail.com>",

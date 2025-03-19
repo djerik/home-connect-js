@@ -31,9 +31,9 @@ class HomeConnect extends EventEmitter {
             // schedule token refresh
             clearTimeout(this.tokenRefreshTimeout)
             const timeToNextTokenRefresh = (this.tokens.timestamp + this.tokens.expires_in * 0.9) - Math.floor(Date.now() / 1000)
-            this.tokenRefreshTimeout = setTimeout(() => this.refreshTokens(), timeToNextTokenRefresh * 1000)   
-            this.emit("newRefreshToken", this.tokens.refresh_token);
+            this.tokenRefreshTimeout = setTimeout(() => this.refreshTokens(), timeToNextTokenRefresh * 1000)               
             this.client = await utils.getClient(this.tokens.access_token);
+	    this.emit("newRefreshToken", this.tokens.refresh_token);
         } catch (error) {
             throw error
         }
